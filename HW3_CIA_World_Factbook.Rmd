@@ -1,0 +1,569 @@
+---
+title: An R Markdown document converted from "HW3_CIA_World_Factbook.ipynb"
+output: html_document
+---
+
+# Homework 3: CIA World Factbook Data Cleaning and Formatting
+
+**Author:** Amogh Guthur
+**Course:** DACSS 601
+
+## Data Sources:
+- Maternal Mortality Ratio: https://www.cia.gov/the-world-factbook/field/maternal-mortality-ratio/country-comparison/
+- Infant Mortality Rate: https://www.cia.gov/the-world-factbook/field/infant-mortality-rate/country-comparison/
+- Life Expectancy at Birth: https://www.cia.gov/the-world-factbook/field/life-expectancy-at-birth/country-comparison/
+
+## Task:
+Keep only 3 columns: **country name**, **variable**, and **region**. Save as RDS and CSV.
+
+## 1. Maternal Mortality Ratio Data
+
+```{r}
+# Create maternal mortality ratio dataframe with 3 columns: country, variable, region
+maternal_mortality <- data.frame(
+  # Column 1: Country names from CIA World Factbook
+  country = c("Nigeria", "Chad", "South Sudan", "Central African Republic", "Liberia",
+              "Somalia", "Afghanistan", "Benin", "Guinea-Bissau", "Guinea",
+              "Lesotho", "Madagascar", "Congo, Democratic Republic of the", "Burundi", "Mauritania",
+              "Kenya", "Mali", "Cote d'Ivoire", "Zimbabwe", "Gambia, The",
+              "Sierra Leone", "Niger", "Togo", "Haiti", "Eritrea",
+              "Tanzania", "Nauru", "Cameroon", "Sudan", "Burkina Faso",
+              "Congo, Republic of the", "Senegal", "Ghana", "Gabon", "Rwanda",
+              "Venezuela", "Malawi", "Ethiopia", "Timor-Leste", "Papua New Guinea",
+              "Burma", "Angola", "Comoros", "Equatorial Guinea", "Uganda",
+              "Tuvalu", "Djibouti", "Pakistan", "Marshall Islands", "Botswana",
+              "Bolivia", "Nepal", "Indonesia", "Namibia", "Cambodia",
+              "Jamaica", "Micronesia, Federated States of", "Dominican Republic", "Solomon Islands", "South Africa",
+              "Eswatini", "Yemen", "Bangladesh", "Laos", "Samoa",
+              "Vanuatu", "Guatemala", "Palau", "Zambia", "Philippines",
+              "Suriname", "Mozambique", "Kiribati", "India", "Bahamas, The",
+              "Guyana", "Sao Tome and Principe", "Saint Kitts and Nevis", "Morocco", "Belize",
+              "Korea, North", "Tonga", "Brazil", "Iraq", "Mauritius",
+              "Algeria", "Nicaragua", "Colombia", "Libya", "Paraguay",
+              "Saint Vincent and the Grenadines", "Ecuador", "Trinidad and Tobago", "Peru", "Grenada",
+              "Vietnam", "Bhutan", "Honduras", "Saint Lucia", "Kyrgyzstan",
+              "Mexico", "Seychelles", "Mongolia", "Cabo Verde", "El Salvador",
+              "Panama", "Dominica", "Tunisia", "Brunei", "Antigua and Barbuda",
+              "Cuba", "Barbados", "Thailand", "Argentina", "Maldives",
+              "Jordan", "Fiji", "Uzbekistan", "Malaysia", "Costa Rica",
+              "Georgia", "Syria", "Latvia", "Moldova", "Armenia",
+              "Sri Lanka", "Azerbaijan", "Egypt", "Bahrain", "United States",
+              "China", "West Bank", "Gaza Strip", "Iran", "Turkey (Turkiye)",
+              "Uruguay", "Portugal", "Ukraine", "Lebanon", "Cyprus",
+              "Tajikistan", "Oman", "Canada", "Romania", "Luxembourg",
+              "Hungary", "Andorra", "Serbia", "Puerto Rico", "Chile",
+              "Kazakhstan", "Russia", "Lithuania", "Kuwait", "United Kingdom",
+              "Finland", "Malta", "San Marino", "France", "Albania",
+              "New Zealand", "Saudi Arabia", "Italy", "Bosnia and Herzegovina", "Montenegro",
+              "Singapore", "Austria", "Bulgaria", "Turkmenistan", "Estonia",
+              "Greece", "Switzerland", "Monaco", "Ireland", "Qatar",
+              "Netherlands", "Belgium", "Denmark", "Korea, South", "Sweden",
+              "Slovakia", "Germany", "Japan", "Spain", "North Macedonia",
+              "Iceland", "Czechia", "Croatia", "United Arab Emirates", "Slovenia",
+              "Australia", "Israel", "Poland", "Belarus", "Norway",
+              "Cook Islands"),
+  # Column 2: Maternal mortality ratio (deaths per 100,000 live births, 2023 est.)
+  maternal_mortality_ratio = c(993, 748, 692, 692, 628,
+                               563, 521, 518, 505, 494,
+                               478, 445, 427, 392, 381,
+                               379, 367, 359, 358, 354,
+                               354, 350, 349, 328, 291,
+                               276, 273, 258, 256, 242,
+                               241, 237, 234, 233, 229,
+                               227, 225, 195, 192, 189,
+                               185, 183, 179, 174, 170,
+                               170, 162, 155, 155, 155,
+                               146, 142, 140, 139, 137,
+                               130, 129, 124, 123, 118,
+                               118, 118, 115, 112, 101,
+                               100, 94, 89, 85, 84,
+                               84, 82, 80, 80, 76,
+                               75, 75, 74, 70, 67,
+                               67, 67, 67, 66, 66,
+                               62, 60, 59, 59, 58,
+                               56, 55, 54, 51, 48,
+                               48, 47, 47, 44, 42,
+                               42, 42, 41, 40, 39,
+                               37, 36, 36, 36, 35,
+                               35, 35, 34, 33, 32,
+                               31, 30, 26, 26, 24,
+                               20, 20, 19, 19, 19,
+                               18, 18, 17, 17, 17,
+                               16, 16, 16, 16, 15,
+                               15, 15, 15, 15, 14,
+                               14, 13, 12, 12, 12,
+                               12, 11, 11, 11, 10,
+                               10, 9, 8, 8, 8,
+                               8, 8, 8, 7, 7,
+                               7, 7, 6, 6, 6,
+                               6, 6, 6, 5, 5,
+                               5, 5, 5, 4, 4,
+                               4, 4, 4, 4, 4,
+                               4, 4, 3, 3, 3,
+                               3, 3, 3, 3, 3,
+                               2, 2, 2, 1, 1,
+                               0),
+  # Column 3: Region classification from CIA World Factbook
+  region = c("Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "South Asia", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Central America and the Caribbean", "Africa",
+             "Africa", "Australia and Oceania", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "South America", "Africa", "Africa", "East and Southeast Asia", "Australia and Oceania",
+             "East and Southeast Asia", "Africa", "Africa", "Africa", "Africa",
+             "Australia and Oceania", "Africa", "South Asia", "Australia and Oceania", "Africa",
+             "South America", "South Asia", "East and Southeast Asia", "Africa", "East and Southeast Asia",
+             "Central America and the Caribbean", "Australia and Oceania", "Central America and the Caribbean", "Australia and Oceania", "Africa",
+             "Africa", "Middle East", "South Asia", "East and Southeast Asia", "Australia and Oceania",
+             "Australia and Oceania", "Central America and the Caribbean", "Australia and Oceania", "Africa", "East and Southeast Asia",
+             "South America", "Africa", "Australia and Oceania", "South Asia", "Central America and the Caribbean",
+             "South America", "Africa", "Central America and the Caribbean", "Africa", "Central America and the Caribbean",
+             "East and Southeast Asia", "Australia and Oceania", "South America", "Middle East", "Africa",
+             "Africa", "Central America and the Caribbean", "South America", "Africa", "South America",
+             "Central America and the Caribbean", "South America", "Central America and the Caribbean", "South America", "Central America and the Caribbean",
+             "East and Southeast Asia", "South Asia", "Central America and the Caribbean", "Central America and the Caribbean", "Central Asia",
+             "North America", "Africa", "East and Southeast Asia", "Africa", "Central America and the Caribbean",
+             "Central America and the Caribbean", "Central America and the Caribbean", "Africa", "East and Southeast Asia", "Central America and the Caribbean",
+             "Central America and the Caribbean", "Central America and the Caribbean", "East and Southeast Asia", "South America", "South Asia",
+             "Middle East", "Australia and Oceania", "Central Asia", "East and Southeast Asia", "Central America and the Caribbean",
+             "Middle East", "Middle East", "Europe", "Europe", "Middle East",
+             "South Asia", "Middle East", "Africa", "Middle East", "North America",
+             "East and Southeast Asia", "Middle East", "Middle East", "Middle East", "Middle East",
+             "South America", "Europe", "Europe", "Middle East", "Europe",
+             "Central Asia", "Middle East", "North America", "Europe", "Europe",
+             "Europe", "Europe", "Europe", "Central America and the Caribbean", "South America",
+             "Central Asia", "Europe", "Europe", "Middle East", "Europe",
+             "Europe", "Europe", "Europe", "Europe", "Europe",
+             "Australia and Oceania", "Middle East", "Europe", "Europe", "Europe",
+             "East and Southeast Asia", "Europe", "Europe", "Central Asia", "Europe",
+             "Europe", "Europe", "Europe", "Europe", "Middle East",
+             "Europe", "Europe", "Europe", "East and Southeast Asia", "Europe",
+             "Europe", "Europe", "East and Southeast Asia", "Europe", "Europe",
+             "Europe", "Europe", "Europe", "Middle East", "Europe",
+             "Australia and Oceania", "Middle East", "Europe", "Europe", "Europe",
+             "Australia and Oceania")
+)
+```
+
+```{r}
+# Display first 6 rows to verify structure
+head(maternal_mortality)
+```
+
+```{r}
+# Verify data types using str() function
+str(maternal_mortality)
+```
+
+```{r}
+# Save as RDS format (preserves R data types)
+saveRDS(maternal_mortality, "maternal_mortality.rds")
+```
+
+```{r}
+# Save as CSV format (plain text, portable)
+write.csv(maternal_mortality, "maternal_mortality.csv", row.names = FALSE)
+```
+
+```{r}
+# Verify RDS file by reading it back and checking structure
+mm_rds <- readRDS("maternal_mortality.rds")
+# Display structure of loaded RDS file
+str(mm_rds)
+```
+
+```{r}
+# Verify CSV file by reading it back and checking structure
+mm_csv <- read.csv("maternal_mortality.csv")
+# Display structure of loaded CSV file
+str(mm_csv)
+```
+
+## 2. Infant Mortality Rate Data
+
+```{r}
+# Create infant mortality rate dataframe with 3 columns: country, variable, region
+infant_mortality <- data.frame(
+  # Column 1: Country names from CIA World Factbook
+  country = c("Afghanistan", "Somalia", "Central African Republic", "Equatorial Guinea", "Sierra Leone",
+              "Niger", "Chad", "South Sudan", "Mozambique", "Mali",
+              "Congo, Democratic Republic of the", "Liberia", "Angola", "Comoros", "Nigeria",
+              "Benin", "Cote d'Ivoire", "Pakistan", "Mauritania", "Burkina Faso",
+              "Guinea", "Guinea-Bissau", "Cameroon", "Lesotho", "Djibouti",
+              "Yemen", "Sao Tome and Principe", "Sudan", "Eritrea", "Togo",
+              "Madagascar", "Haiti", "Eswatini", "Turkmenistan", "Gambia, The",
+              "Burundi", "Zambia", "Laos", "Zimbabwe", "Ethiopia",
+              "Timor-Leste", "Burma", "Papua New Guinea", "Malawi", "Kiribati",
+              "Ghana", "Senegal", "Congo, Republic of the", "India", "Suriname",
+              "Tanzania", "Bangladesh", "Uganda", "Cambodia", "Namibia",
+              "Tuvalu", "Gabon", "Kenya", "Guatemala", "Rwanda",
+              "Kyrgyzstan", "Maldives", "Bhutan", "Nepal", "Botswana",
+              "Kosovo", "Cabo Verde", "Bolivia", "Philippines", "Paraguay",
+              "South Africa", "Georgia", "Tajikistan", "Dominican Republic", "Guyana",
+              "Micronesia, Federated States of", "Marshall Islands", "Mongolia", "Solomon Islands", "Indonesia",
+              "Iraq", "Algeria", "Turkey (Turkiye)", "Morocco", "Uzbekistan",
+              "Saint Helena, Ascension, and Tristan da Cunha", "Samoa", "Egypt", "Korea, North", "Honduras",
+              "Gaza Strip", "Syria", "West Bank", "Trinidad and Tobago", "Cook Islands",
+              "Nicaragua", "Iran", "Panama", "Vietnam", "Oman",
+              "Venezuela", "Moldova", "Vanuatu", "Antigua and Barbuda", "British Virgin Islands",
+              "Jordan", "Brazil", "Saint Vincent and the Grenadines", "Mexico", "Northern Mariana Islands",
+              "Tonga", "El Salvador", "Saudi Arabia", "Colombia", "Armenia",
+              "Mauritius", "Aruba", "Saint Lucia", "Tunisia", "Belize",
+              "Ecuador", "Turks and Caicos Islands", "Azerbaijan", "Guam", "Peru",
+              "Palau", "Dominica", "Libya", "Jamaica", "Albania",
+              "Seychelles", "Brunei", "Fiji", "Montserrat", "Bahrain",
+              "American Samoa", "Barbados", "Bahamas, The", "Grenada", "Argentina",
+              "Ukraine", "Greenland", "Croatia", "Cyprus", "Uruguay",
+              "Kazakhstan", "Saint Kitts and Nevis", "Saint Pierre and Miquelon", "Bulgaria", "Sint Maarten",
+              "Nauru", "Curacao", "Virgin Islands", "Cayman Islands", "Kuwait",
+              "North Macedonia", "Sri Lanka", "Costa Rica", "Lebanon", "Saint Martin",
+              "Saint Barthelemy", "Russia", "Qatar", "Malaysia", "Thailand",
+              "Chile", "China", "San Marino", "Gibraltar", "Puerto Rico",
+              "Faroe Islands", "Romania", "United States", "Slovakia", "United Arab Emirates",
+              "Bosnia and Herzegovina", "Poland", "New Caledonia", "Latvia", "Hungary",
+              "Serbia", "Malta", "Macau", "French Polynesia", "Canada",
+              "Isle of Man", "Cuba", "Wallis and Futuna", "Liechtenstein", "United Kingdom",
+              "Taiwan", "Jersey", "Lithuania", "Netherlands", "Greece",
+              "Estonia", "Guernsey", "Ireland", "New Zealand", "Andorra",
+              "Austria", "Montenegro", "Luxembourg", "France", "Belgium",
+              "Germany", "Italy", "Anguilla", "Switzerland", "Denmark",
+              "Australia", "Korea, South", "Israel", "Czechia", "Hong Kong",
+              "Portugal", "Spain", "Sweden", "Belarus", "Bermuda",
+              "Finland", "Japan", "Norway", "Monaco", "Iceland",
+              "Singapore", "Slovenia"),
+  # Column 2: Infant mortality rate (deaths per 1,000 live births, 2024 est.)
+  infant_mortality_rate = c(101.3, 83.6, 80.5, 77.4, 71.2,
+                            64.3, 62.5, 60.1, 58.2, 57.4,
+                            57.4, 55.7, 55.6, 54.9, 53.7,
+                            52.9, 52.5, 51.5, 48.9, 47.0,
+                            47.0, 46.4, 46.1, 45.7, 45.2,
+                            44.6, 42.6, 40.6, 39.8, 38.4,
+                            37.5, 36.8, 36.7, 35.9, 35.7,
+                            35.7, 35.6, 35.4, 33.4, 32.6,
+                            32.2, 32.1, 32.0, 31.9, 31.5,
+                            31.2, 31.1, 30.6, 30.4, 29.6,
+                            29.6, 28.8, 28.5, 27.9, 27.9,
+                            27.8, 26.9, 26.1, 25.0, 24.9,
+                            24.5, 24.4, 24.3, 24.0, 23.7,
+                            22.9, 22.4, 22.3, 22.0, 22.0,
+                            21.9, 21.7, 21.7, 21.7, 21.1,
+                            20.9, 20.6, 19.4, 19.1, 18.9,
+                            18.7, 18.7, 18.4, 18.3, 18.2,
+                            18.1, 17.3, 16.8, 15.4, 15.4,
+                            15.1, 15.1, 15.1, 15.1, 15.1,
+                            14.4, 14.3, 14.2, 14.1, 13.9,
+                            13.9, 13.8, 13.7, 13.6, 13.4,
+                            13.2, 12.9, 12.3, 12.1, 11.9,
+                            11.8, 11.7, 11.7, 11.7, 11.6,
+                            11.6, 11.5, 11.5, 11.3, 11.3,
+                            11.2, 11.1, 10.9, 10.9, 10.8,
+                            10.8, 10.7, 10.7, 10.7, 10.3,
+                            10.2, 10.0, 9.7, 9.7, 9.7,
+                            9.7, 9.6, 9.4, 9.0, 9.0,
+                            8.7, 8.5, 8.4, 8.1, 8.0,
+                            8.0, 8.0, 7.8, 7.7, 7.6,
+                            7.6, 7.5, 7.3, 7.3, 7.2,
+                            7.0, 6.8, 6.7, 6.7, 6.5,
+                            6.5, 6.5, 6.4, 6.4, 6.3,
+                            6.3, 6.2, 6.2, 6.0, 5.8,
+                            5.7, 5.5, 5.1, 5.1, 5.0,
+                            5.0, 4.9, 4.8, 4.7, 4.7,
+                            4.5, 4.4, 4.4, 4.3, 4.3,
+                            4.1, 4.0, 3.9, 3.9, 3.8,
+                            3.8, 3.7, 3.6, 3.6, 3.4,
+                            3.3, 3.3, 3.3, 3.3, 3.3,
+                            3.2, 3.2, 3.2, 3.1, 3.1,
+                            3.1, 3.1, 3.0, 3.0, 3.0,
+                            2.9, 2.8, 2.8, 2.6, 2.5,
+                            2.4, 2.4, 2.3, 2.1, 2.1,
+                            2.1, 1.9, 1.8, 1.7, 1.6,
+                            1.5, 1.5),
+  # Column 3: Region classification from CIA World Factbook
+  region = c("South Asia", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "South Asia", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Middle East", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Central America and the Caribbean", "Africa", "Central Asia", "Africa",
+             "Africa", "Africa", "East and Southeast Asia", "Africa", "Africa",
+             "East and Southeast Asia", "East and Southeast Asia", "Australia and Oceania", "Africa", "Australia and Oceania",
+             "Africa", "Africa", "Africa", "South Asia", "South America",
+             "Africa", "South Asia", "Africa", "East and Southeast Asia", "Africa",
+             "Australia and Oceania", "Africa", "Africa", "Central America and the Caribbean", "Africa",
+             "Central Asia", "South Asia", "South Asia", "South Asia", "Africa",
+             "Europe", "Africa", "South America", "East and Southeast Asia", "South America",
+             "Africa", "Middle East", "Central Asia", "Central America and the Caribbean", "South America",
+             "Australia and Oceania", "Australia and Oceania", "East and Southeast Asia", "Australia and Oceania", "East and Southeast Asia",
+             "Middle East", "Africa", "Middle East", "Africa", "Central Asia",
+             "Africa", "Australia and Oceania", "Africa", "East and Southeast Asia", "Central America and the Caribbean",
+             "Middle East", "Middle East", "Middle East", "Central America and the Caribbean", "Australia and Oceania",
+             "Central America and the Caribbean", "Middle East", "Central America and the Caribbean", "East and Southeast Asia", "Middle East",
+             "South America", "Europe", "Australia and Oceania", "Central America and the Caribbean", "Central America and the Caribbean",
+             "Middle East", "South America", "Central America and the Caribbean", "North America", "Australia and Oceania",
+             "Australia and Oceania", "Central America and the Caribbean", "Middle East", "South America", "Middle East",
+             "Africa", "Central America and the Caribbean", "Central America and the Caribbean", "Africa", "Central America and the Caribbean",
+             "South America", "Central America and the Caribbean", "Middle East", "Australia and Oceania", "South America",
+             "Australia and Oceania", "Central America and the Caribbean", "Africa", "Central America and the Caribbean", "Europe",
+             "Africa", "East and Southeast Asia", "Australia and Oceania", "Central America and the Caribbean", "Middle East",
+             "Australia and Oceania", "Central America and the Caribbean", "Central America and the Caribbean", "Central America and the Caribbean", "South America",
+             "Europe", "North America", "Europe", "Europe", "South America",
+             "Central Asia", "Central America and the Caribbean", "North America", "Europe", "Central America and the Caribbean",
+             "Australia and Oceania", "Central America and the Caribbean", "Central America and the Caribbean", "Central America and the Caribbean", "Middle East",
+             "Europe", "South Asia", "Central America and the Caribbean", "Middle East", "Central America and the Caribbean",
+             "Central America and the Caribbean", "Europe", "Middle East", "East and Southeast Asia", "East and Southeast Asia",
+             "South America", "East and Southeast Asia", "Europe", "Europe", "Central America and the Caribbean",
+             "Europe", "Europe", "North America", "Europe", "Middle East",
+             "Europe", "Europe", "Australia and Oceania", "Europe", "Europe",
+             "Europe", "Europe", "East and Southeast Asia", "Australia and Oceania", "North America",
+             "Europe", "Central America and the Caribbean", "Australia and Oceania", "Europe", "Europe",
+             "East and Southeast Asia", "Europe", "Europe", "Europe", "Europe",
+             "Europe", "Europe", "Europe", "Australia and Oceania", "Europe",
+             "Europe", "Europe", "Europe", "Europe", "Europe",
+             "Europe", "Europe", "Central America and the Caribbean", "Europe", "Europe",
+             "Australia and Oceania", "East and Southeast Asia", "Middle East", "Europe", "East and Southeast Asia",
+             "Europe", "Europe", "Europe", "Europe", "North America",
+             "Europe", "East and Southeast Asia", "Europe", "Europe", "Europe",
+             "East and Southeast Asia", "Europe")
+)
+```
+
+```{r}
+# Display first 6 rows to verify structure
+head(infant_mortality)
+```
+
+```{r}
+# Verify data types using str() function
+str(infant_mortality)
+```
+
+```{r}
+# Save as RDS format (preserves R data types)
+saveRDS(infant_mortality, "infant_mortality.rds")
+```
+
+```{r}
+# Save as CSV format (plain text, portable)
+write.csv(infant_mortality, "infant_mortality.csv", row.names = FALSE)
+```
+
+```{r}
+# Verify RDS file by reading it back and checking structure
+im_rds <- readRDS("infant_mortality.rds")
+# Display structure of loaded RDS file
+str(im_rds)
+```
+
+```{r}
+# Verify CSV file by reading it back and checking structure
+im_csv <- read.csv("infant_mortality.csv")
+# Display structure of loaded CSV file
+str(im_csv)
+```
+
+## 3. Life Expectancy at Birth Data
+
+```{r}
+# Create life expectancy at birth dataframe with 3 columns: country, variable, region
+life_expectancy <- data.frame(
+  # Column 1: Country names from CIA World Factbook
+  country = c("Monaco", "Singapore", "Macau", "Japan", "Canada",
+              "San Marino", "Hong Kong", "Iceland", "Switzerland", "Andorra",
+              "Guernsey", "Malta", "Australia", "Luxembourg", "Korea, South",
+              "Israel", "Jersey", "Spain", "Italy", "Liechtenstein",
+              "Sweden", "Norway", "New Zealand", "Austria", "France",
+              "Anguilla", "Cayman Islands", "Isle of Man", "Bermuda", "Belgium",
+              "Finland", "Slovenia", "United Kingdom", "Puerto Rico", "Denmark",
+              "Ireland", "Portugal", "Germany", "Netherlands", "Greece",
+              "Saint Pierre and Miquelon", "Faroe Islands", "Taiwan", "Turks and Caicos Islands", "Wallis and Futuna",
+              "Saint Martin", "Saint Barthelemy", "Gibraltar", "United States", "Saint Helena, Ascension, and Tristan da Cunha",
+              "Virgin Islands", "Bahrain", "Qatar", "Costa Rica", "Chile",
+              "Cyprus", "British Virgin Islands", "Cuba", "Curacao", "United Arab Emirates",
+              "Albania", "Sint Maarten", "Kuwait", "Saint Lucia", "New Caledonia",
+              "Panama", "Lebanon", "Barbados", "French Polynesia", "Uruguay",
+              "Brunei", "Argentina", "Paraguay", "Dominica", "China",
+              "Czechia", "Bosnia and Herzegovina", "Aruba", "Estonia", "Antigua and Barbuda",
+              "Thailand", "Montenegro", "Guam", "Tonga", "Algeria",
+              "Croatia", "Libya", "Cook Islands", "Saint Kitts and Nevis", "Maldives",
+              "Oman", "North Macedonia", "Tunisia", "Slovakia", "Solomon Islands",
+              "Saint Vincent and the Grenadines", "Saudi Arabia", "Northern Mariana Islands", "Romania", "Sri Lanka",
+              "Poland", "Armenia", "Turkey (Turkiye)", "Bahamas, The", "Seychelles",
+              "Malaysia", "Trinidad and Tobago", "West Bank", "Jordan", "Latvia",
+              "Jamaica", "Grenada", "Brazil", "Uzbekistan", "Vietnam",
+              "Montserrat", "Lithuania", "Bulgaria", "Hungary", "Azerbaijan",
+              "El Salvador", "American Samoa", "Vanuatu", "Samoa", "Iran",
+              "Gaza Strip", "Mauritius", "Serbia", "Bangladesh", "Marshall Islands",
+              "Palau", "Egypt", "Micronesia, Federated States of", "Colombia", "Ecuador",
+              "Fiji", "Syria", "Belarus", "Nicaragua", "Mexico",
+              "Greenland", "Venezuela", "Belize", "Cabo Verde", "Morocco",
+              "Iraq", "Bhutan", "Indonesia", "Guatemala", "Korea, North",
+              "Kazakhstan", "Honduras", "Kosovo", "Nepal", "Malawi",
+              "Congo, Republic of the", "Kyrgyzstan", "Georgia", "Suriname", "Dominican Republic",
+              "Bolivia", "Turkmenistan", "Guyana", "Russia", "Togo",
+              "South Africa", "Tajikistan", "Mongolia", "Cambodia", "Philippines",
+              "Tanzania", "Senegal", "Ukraine", "Timor-Leste", "Gabon",
+              "Kenya", "Burma", "Pakistan", "Moldova", "Ghana",
+              "Papua New Guinea", "Uganda", "Laos", "Tuvalu", "Peru",
+              "Madagascar", "Nauru", "Kiribati", "Gambia, The", "India",
+              "Yemen", "Burundi", "Comoros", "Sudan", "Sao Tome and Principe",
+              "Ethiopia", "Eritrea", "Zimbabwe", "Zambia", "Rwanda",
+              "Botswana", "Djibouti", "Namibia", "Mauritania", "Haiti",
+              "Guinea", "Guinea-Bissau", "Burkina Faso", "Cameroon", "Equatorial Guinea",
+              "Mali", "Cote d'Ivoire", "Benin", "Angola", "Congo, Democratic Republic of the",
+              "Nigeria", "Liberia", "Niger", "Eswatini", "South Sudan",
+              "Lesotho", "Chad", "Sierra Leone", "Mozambique", "Somalia",
+              "Central African Republic", "Afghanistan"),
+  # Column 2: Life expectancy at birth (years, 2024 est.)
+  life_expectancy_years = c(89.8, 86.7, 85.3, 85.2, 84.2,
+                            84.2, 84.0, 84.0, 83.9, 83.8,
+                            83.6, 83.6, 83.5, 83.4, 83.4,
+                            83.1, 83.0, 83.0, 83.0, 83.0,
+                            82.9, 82.9, 82.9, 82.7, 82.6,
+                            82.6, 82.5, 82.5, 82.5, 82.3,
+                            82.2, 82.2, 82.2, 82.1, 82.1,
+                            82.0, 81.9, 81.9, 81.9, 81.9,
+                            81.8, 81.7, 81.6, 81.3, 81.1,
+                            81.0, 81.0, 80.9, 80.9, 80.9,
+                            80.7, 80.4, 80.3, 80.3, 80.3,
+                            80.2, 80.1, 80.1, 79.9, 79.9,
+                            79.9, 79.7, 79.6, 79.4, 79.3,
+                            79.2, 79.2, 79.0, 78.9, 78.9,
+                            78.9, 78.8, 78.8, 78.7, 78.7,
+                            78.6, 78.5, 78.5, 78.4, 78.3,
+                            78.2, 78.2, 78.0, 78.0, 77.9,
+                            77.7, 77.7, 77.6, 77.6, 77.4,
+                            77.4, 77.3, 77.3, 77.2, 77.2,
+                            77.2, 77.2, 77.1, 76.9, 76.8,
+                            76.7, 76.7, 76.7, 76.7, 76.6,
+                            76.6, 76.5, 76.5, 76.5, 76.4,
+                            76.3, 76.3, 76.3, 76.2, 76.1,
+                            76.1, 76.1, 76.1, 76.0, 75.9,
+                            75.9, 75.8, 75.7, 75.7, 75.6,
+                            75.5, 75.4, 75.3, 75.2, 75.2,
+                            75.2, 75.0, 75.0, 74.9, 74.9,
+                            74.8, 74.8, 74.7, 74.7, 74.6,
+                            74.5, 74.5, 74.3, 74.3, 74.2,
+                            73.7, 73.7, 73.6, 73.5, 73.5,
+                            73.3, 73.1, 73.1, 73.0, 73.0,
+                            72.9, 72.9, 72.8, 72.7, 72.6,
+                            72.5, 72.4, 72.4, 72.3, 72.1,
+                            71.9, 71.9, 71.9, 71.4, 70.8,
+                            70.8, 70.6, 70.5, 70.5, 70.4,
+                            70.4, 70.3, 70.3, 70.1, 70.1,
+                            70.1, 69.7, 69.0, 69.0, 68.9,
+                            68.8, 68.6, 68.5, 68.4, 68.2,
+                            68.2, 68.1, 67.8, 67.8, 67.7,
+                            67.7, 67.5, 67.2, 66.9, 66.6,
+                            66.4, 65.9, 65.9, 65.9, 65.6,
+                            64.6, 64.5, 64.2, 64.2, 63.9,
+                            63.2, 63.2, 63.0, 62.9, 62.6,
+                            62.2, 61.6, 60.9, 60.7, 60.3,
+                            60.2, 60.0, 59.4, 58.3, 56.5,
+                            56.4, 54.4),
+  # Column 3: Region classification from CIA World Factbook
+  region = c("Europe", "East and Southeast Asia", "East and Southeast Asia", "East and Southeast Asia", "North America",
+             "Europe", "East and Southeast Asia", "Europe", "Europe", "Europe",
+             "Europe", "Europe", "Australia and Oceania", "Europe", "East and Southeast Asia",
+             "Middle East", "Europe", "Europe", "Europe", "Europe",
+             "Europe", "Europe", "Australia and Oceania", "Europe", "Europe",
+             "Central America and the Caribbean", "Central America and the Caribbean", "Europe", "North America", "Europe",
+             "Europe", "Europe", "Europe", "Central America and the Caribbean", "Europe",
+             "Europe", "Europe", "Europe", "Europe", "Europe",
+             "North America", "Europe", "East and Southeast Asia", "Central America and the Caribbean", "Australia and Oceania",
+             "Central America and the Caribbean", "Central America and the Caribbean", "Europe", "North America", "Africa",
+             "Central America and the Caribbean", "Middle East", "Middle East", "Central America and the Caribbean", "South America",
+             "Europe", "Central America and the Caribbean", "Central America and the Caribbean", "Central America and the Caribbean", "Middle East",
+             "Europe", "Central America and the Caribbean", "Middle East", "Central America and the Caribbean", "Australia and Oceania",
+             "Central America and the Caribbean", "Middle East", "Central America and the Caribbean", "Australia and Oceania", "South America",
+             "East and Southeast Asia", "South America", "South America", "Central America and the Caribbean", "East and Southeast Asia",
+             "Europe", "Europe", "Central America and the Caribbean", "Europe", "Central America and the Caribbean",
+             "East and Southeast Asia", "Europe", "Australia and Oceania", "Australia and Oceania", "Africa",
+             "Europe", "Africa", "Australia and Oceania", "Central America and the Caribbean", "South Asia",
+             "Middle East", "Europe", "Africa", "Europe", "Australia and Oceania",
+             "Central America and the Caribbean", "Middle East", "Australia and Oceania", "Europe", "South Asia",
+             "Europe", "Middle East", "Middle East", "Central America and the Caribbean", "Africa",
+             "East and Southeast Asia", "Central America and the Caribbean", "Middle East", "Middle East", "Europe",
+             "Central America and the Caribbean", "Central America and the Caribbean", "South America", "Central Asia", "East and Southeast Asia",
+             "Central America and the Caribbean", "Europe", "Europe", "Europe", "Middle East",
+             "Central America and the Caribbean", "Australia and Oceania", "Australia and Oceania", "Australia and Oceania", "Middle East",
+             "Middle East", "Africa", "Europe", "South Asia", "Australia and Oceania",
+             "Australia and Oceania", "Africa", "Australia and Oceania", "South America", "South America",
+             "Australia and Oceania", "Middle East", "Europe", "Central America and the Caribbean", "North America",
+             "North America", "South America", "Central America and the Caribbean", "Africa", "Africa",
+             "Middle East", "South Asia", "East and Southeast Asia", "Central America and the Caribbean", "East and Southeast Asia",
+             "Central Asia", "Central America and the Caribbean", "Europe", "South Asia", "Africa",
+             "Africa", "Central Asia", "Middle East", "South America", "Central America and the Caribbean",
+             "South America", "Central Asia", "South America", "Europe", "Africa",
+             "Africa", "Central Asia", "East and Southeast Asia", "East and Southeast Asia", "East and Southeast Asia",
+             "Africa", "Africa", "Europe", "East and Southeast Asia", "Africa",
+             "Africa", "East and Southeast Asia", "South Asia", "Europe", "Africa",
+             "Australia and Oceania", "Africa", "East and Southeast Asia", "Australia and Oceania", "South America",
+             "Africa", "Australia and Oceania", "Australia and Oceania", "Africa", "South Asia",
+             "Middle East", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Central America and the Caribbean",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "Africa", "Africa", "Africa", "Africa",
+             "Africa", "South Asia")
+)
+```
+
+```{r}
+# Display first 6 rows to verify structure
+head(life_expectancy)
+```
+
+```{r}
+# Verify data types using str() function
+str(life_expectancy)
+```
+
+```{r}
+# Save as RDS format (preserves R data types)
+saveRDS(life_expectancy, "life_expectancy.rds")
+```
+
+```{r}
+# Save as CSV format (plain text, portable)
+write.csv(life_expectancy, "life_expectancy.csv", row.names = FALSE)
+```
+
+```{r}
+# Verify RDS file by reading it back and checking structure
+le_rds <- readRDS("life_expectancy.rds")
+# Display structure of loaded RDS file
+str(le_rds)
+```
+
+```{r}
+# Verify CSV file by reading it back and checking structure
+le_csv <- read.csv("life_expectancy.csv")
+# Display structure of loaded CSV file
+str(le_csv)
+```
+
+## 4. Summary
+
+### Files Created (6 total):
+
+| Dataset | RDS File | CSV File |
+|---------|----------|----------|
+| Maternal Mortality Ratio | `maternal_mortality.rds` | `maternal_mortality.csv` |
+| Infant Mortality Rate | `infant_mortality.rds` | `infant_mortality.csv` |
+| Life Expectancy at Birth | `life_expectancy.rds` | `life_expectancy.csv` |
+
+### Data Sources:
+- Maternal Mortality: https://www.cia.gov/the-world-factbook/field/maternal-mortality-ratio/country-comparison/
+- Infant Mortality: https://www.cia.gov/the-world-factbook/field/infant-mortality-rate/country-comparison/
+- Life Expectancy: https://www.cia.gov/the-world-factbook/field/life-expectancy-at-birth/country-comparison/
+
+```{r}
+# List all files created in current directory
+list.files(pattern = "\\.(rds|csv)$")
+```
+
