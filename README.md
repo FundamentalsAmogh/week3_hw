@@ -1,6 +1,9 @@
 # week3_hw
 # Homework 3: CIA World Factbook Data Cleaning
 
+## Github Pages Link
+- https://fundamentalsamogh.github.io/week3_hw/
+
 ## Overview
 This project downloads, cleans, and formats three health datasets from the CIA World Factbook. Each dataset is cleaned to keep only 3 columns: **country**, **variable**, and **region**.
 
